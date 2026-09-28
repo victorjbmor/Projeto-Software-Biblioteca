@@ -6,7 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.demo.model.Livro;
 
-public interface LivroRepository extends JpaRepository<Livro, Long>{
+public interface LivroRepository extends JpaRepository<Livro, Long> {
 
 	List<Livro> findByAutorId(Long autorId);
+
+	boolean existsByIsbn(String isbn);
 }

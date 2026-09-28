@@ -2,6 +2,8 @@ package com.example.demo.model;
 
 import java.time.LocalDate;
 
+import com.example.demo.exception.RegraDeNegocioException;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,9 +16,9 @@ public class Emprestimo {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
-	@ManyToOne
+	@ManyToOne(optional = false)
 	private Livro livro;
-	@ManyToOne
+	@ManyToOne(optional = false)
 	private Usuario usuario;
 	private LocalDate dataEmprestimo;
 	private LocalDate dataPrevistaDevolucao;
@@ -79,5 +81,16 @@ public class Emprestimo {
 	public void setDataDevolucaoReal(LocalDate dataDevolucaoReal) {
 		this.dataDevolucaoReal = dataDevolucaoReal;
 	}
-	
+
+	public boolean isAtivo() {
+		return dataDevolucaoReal == null;
+	}
+
+	public void devolver(LocalDate data) {
+		if (!isAtivo()) {
+			throw new RegraDeNegocioException("Emprestimo " + id + " ja foi devolvido");
+		}
+		this.dataDevolucaoReal = data;
+	}
+
 }

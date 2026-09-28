@@ -1,7 +1,6 @@
 package com.example.demo.controller;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +20,7 @@ import com.example.demo.service.AutorService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping(value="/autors")
+@RequestMapping("/autores")
 public class AutorController {
 
 	private final AutorService autorService;
@@ -29,36 +28,30 @@ public class AutorController {
 	public AutorController(AutorService autorService) {
 		this.autorService = autorService;
 	}
-	
+
 	@PostMapping
 	public ResponseEntity<AutorResponseDTO> criar(@Valid @RequestBody AutorRequestDTO obj) {
-		Autor autor = new Autor(obj.getNome(), obj.getNacionalidade());
-		Autor salvo = autorService.salvar(autor);
-		AutorResponseDTO response = new AutorResponseDTO(salvo);
-		return ResponseEntity.status(HttpStatus.CREATED).body(response);
+		Autor salvo = autorService.salvar(new Autor(obj.nome(), obj.nacionalidade()));
+		return ResponseEntity.status(HttpStatus.CREATED).body(new AutorResponseDTO(salvo));
 	}
-	
+
 	@GetMapping("/{id}")
 	public ResponseEntity<AutorResponseDTO> findById(@PathVariable Long id) {
-		Autor autor = autorService.findById(id);
-		AutorResponseDTO response = new AutorResponseDTO(autor);
-		return ResponseEntity.ok().body(response);
+		return ResponseEntity.ok(new AutorResponseDTO(autorService.findById(id)));
 	}
-	
-	@GetMapping()
+
+	@GetMapping
 	public ResponseEntity<List<AutorResponseDTO>> findAll() {
-		List<Autor> lista = autorService.findAll();
-		List<AutorResponseDTO> response = lista.stream()
+		List<AutorResponseDTO> response = autorService.findAll().stream()
 				.map(AutorResponseDTO::new)
-				.collect(Collectors.toList());
+				.toList();
 		return ResponseEntity.ok(response);
 	}
-	
+
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteById(@PathVariable Long id) {
 		autorService.deleteById(id);
 		return ResponseEntity.noContent().build();
 	}
-	
-	
+
 }

@@ -34,6 +34,12 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(erro);
 	}
 
+	@ExceptionHandler(CredenciaisInvalidasException.class)
+	public ResponseEntity<ErroResponse> credenciaisInvalidas(CredenciaisInvalidasException ex) {
+		ErroResponse erro = new ErroResponse(401, "Unauthorized", ex.getMessage());
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(erro);
+	}
+
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	public ResponseEntity<ErroResponse> integridade(DataIntegrityViolationException ex) {
 		ErroResponse erro = new ErroResponse(409, "Conflict",

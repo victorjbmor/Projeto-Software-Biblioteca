@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,10 +31,21 @@ public class EmprestimoController {
 		this.emprestimoService = emprestimoService;
 	}
 
+	// O "subject" do token e o id do usuario logado. Pegar o usuario daqui
+	// (e nao do corpo) impede que alguem crie emprestimos em nome de outra pessoa
 	@PostMapping
-	public ResponseEntity<EmprestimoResponseDTO> criar(@Valid @RequestBody EmprestimoRequestDTO obj) {
-		Emprestimo emprestimo = emprestimoService.criar(obj.livroId(), obj.usuarioId());
+	public ResponseEntity<EmprestimoResponseDTO> criar(@Valid @RequestBody EmprestimoRequestDTO obj,
+			@AuthenticationPrincipal Jwt jwt) {
+		Emprestimo emprestimo = emprestimoService.criar(obj.livroId(), Long.valueOf(jwt.getSubject()));
 		return ResponseEntity.status(HttpStatus.CREATED).body(new EmprestimoResponseDTO(emprestimo));
+	}
+
+	@GetMapping("/meus")
+	public ResponseEntity<List<EmprestimoResponseDTO>> meus(@AuthenticationPrincipal Jwt jwt) {
+		List<EmprestimoResponseDTO> response = emprestimoService.listarPorUsuario(Long.valueOf(jwt.getSubject())).stream()
+				.map(EmprestimoResponseDTO::new)
+				.toList();
+		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping("/{id}")

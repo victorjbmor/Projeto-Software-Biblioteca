@@ -22,6 +22,7 @@ import com.example.demo.exception.RegraDeNegocioException;
 import com.example.demo.model.Autor;
 import com.example.demo.model.Emprestimo;
 import com.example.demo.model.Livro;
+import com.example.demo.model.Role;
 import com.example.demo.model.Usuario;
 import com.example.demo.repository.EmprestimoRepository;
 
@@ -41,7 +42,7 @@ class EmprestimoServiceTest {
 	private EmprestimoService emprestimoService;
 
 	private final Livro livro = new Livro("Dom Casmurro", "978-85", new Autor("Machado de Assis", "Brasileiro"));
-	private final Usuario usuario = new Usuario("Ana", "ana@email.com");
+	private final Usuario usuario = new Usuario("Ana", "ana@email.com", "hash", Role.USER);
 
 	@Test
 	void deveCriarEmprestimoComPrazoDe14Dias() {
